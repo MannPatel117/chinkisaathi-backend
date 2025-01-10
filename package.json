@@ -1,0 +1,23 @@
+{
+  "name": "chinki-backend",
+  "version": "1.0.0",
+  "description": "New Backend for Chinki Saathi with MySQL DB",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "author": "Mann Patel",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.9"
+  }
+}
