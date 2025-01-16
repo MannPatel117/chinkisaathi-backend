@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import pool from "./db/connection.js";
+import connectDB from "./db/connection.js";
 
 const app = express()
 
@@ -18,6 +18,7 @@ app.get("/", (req, res) => {
 
 // app.get("/api/v1/test-db", async (req, res) => {
 //     try {
+//         const pool = await connectDB(); // Get the connection pool from connectDB
 //         const [rows] = await pool.query("SELECT * From adminusers AS result");
 //         res.status(200).json({ success: true, result: rows });
 //     } catch (error) {
@@ -25,5 +26,11 @@ app.get("/", (req, res) => {
 //         res.status(500).json({ success: false, error: error.message });
 //     }
 // });
+
+//route imports
+import adminUser from './routes/adminUser.routes.js'
+
+//routes
+app.use("/api/v1/adminUser", adminUser)
 
 export default app
