@@ -1,4 +1,3 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { adminUsers } from '../model/adminUser.model.js'
 import bcrypt from 'bcryptjs';
@@ -250,6 +249,11 @@ import jwt from "jsonwebtoken"
         }
     };
 
+  /*
+    Function Name - getAdminUsers
+    Functionality - Function to fetch all user
+  */
+
     const getAdminUsers = async (req, res) => {
         try {
           const { pagination, page, limit } = req.query;
@@ -295,6 +299,6 @@ import jwt from "jsonwebtoken"
           .status(500)
           .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
         }
-      };
+    };
 
 export { createAdmin, loginAdmin, getAdmin, updateAdmin, deleteAdmin, getAdminUsers }
