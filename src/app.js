@@ -29,8 +29,10 @@ app.get("/", (req, res) => {
 
 //route imports
 import adminUser from './routes/adminUser.routes.js'
+import product from "./routes/product.routes.js";
 
 //routes
 app.use("/api/v1/adminUser", adminUser)
+app.use("/api/v1/products", product)
 
 export default app
