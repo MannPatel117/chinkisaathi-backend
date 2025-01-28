@@ -72,3 +72,20 @@ CREATE TABLE `accounts` (
     PRIMARY KEY (`supplierID`),
     UNIQUE KEY `supplierID_UNIQUE` (`supplierID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- USERS SCRIPT
+
+CREATE TABLE Users (
+    phoneNumber VARCHAR(15) PRIMARY KEY, -- Primary key
+    name VARCHAR(255),                   -- Name of the user
+    addressLine1 VARCHAR(255),           -- Address line 1
+    addressLine2 VARCHAR(255),           -- Address line 2
+    addressLine3 VARCHAR(255),           -- Address line 3
+    city VARCHAR(100),                   -- City
+    state VARCHAR(100),                  -- State
+    pincode INT,                         -- Pincode
+    rewardPoint INT DEFAULT 0,           -- Reward points, defaults to 0
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when created
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Auto-updates when the record is modified
+);
