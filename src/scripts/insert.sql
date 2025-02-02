@@ -1,3 +1,22 @@
+-- INVENTORY SCRIPT
+
+CREATE TABLE `inventory` (
+    `inventoryID` INT PRIMARY KEY AUTO_INCREMENT,
+    `inventoryName` VARCHAR(255),
+    `addressLine1` VARCHAR(255),
+    `addressLine2` VARCHAR(255),
+    `addressLine3` VARCHAR(255),
+    `city` VARCHAR(100),
+    `state` VARCHAR(100),
+    `pincode` INT,
+    `billNumber` INT NOT NULL DEFAULT 0,
+    `invoiceNumber` INT NOT NULL DEFAULT 0,
+    `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deletedAt` DATETIME NULL
+);
+
+
 -- ADMIN USER SCRIPT
 
 CREATE TABLE `adminUsers` (
