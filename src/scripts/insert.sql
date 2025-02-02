@@ -25,7 +25,7 @@ CREATE TABLE `adminUsers` (
     `lastName` VARCHAR(24) NOT NULL,
     `password` VARCHAR(128) NOT NULL,
     `role` ENUM('superadmin', 'admin', 'storeadmin', 'store', 'factoryadmin', 'factory', 'crmmaster', 'crm') DEFAULT 'store',
-    `branch` VARCHAR(24) NOT NULL,
+    `inventory` JSON DEFAULT '[]',
     `phnnumber` VARCHAR(10) DEFAULT NULL,
     `emailid` VARCHAR(45) DEFAULT NULL,
     `addressLine1` VARCHAR(256) DEFAULT NULL,
