@@ -27,3 +27,20 @@ export const verifyJWT = asyncHandler(async(req, res, next) => {
         )
     }  
 })
+
+
+export const verifyRoleSA = asyncHandler(async(req, res, next) => {
+    try { 
+        const user = req.user;
+        if(user.role != 'superadmin'){
+            return res.status(404).json(
+                new ApiResponse(401, "You do not have access", "Forbidden", false)
+            )
+        }
+        next()
+    } catch (error) {
+        return res.status(401).json(
+            new ApiResponse(401, error, "TOKEN ERROR")
+        )
+    }  
+})

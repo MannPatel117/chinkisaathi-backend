@@ -32,11 +32,13 @@ import adminUser from './routes/adminUser.routes.js'
 import product from "./routes/product.routes.js";
 import account from "./routes/account.routes.js"
 import users from "./routes/users.routes.js"
+import inventory from "./routes/inventory.routes.js"
 
 //routes
 app.use("/api/v1/adminUser", adminUser)
 app.use("/api/v1/products", product)
 app.use("/api/v1/accounts", account)
 app.use("/api/v1/users", users)
+app.use("/api/v1/inventorys", inventory)
 
 export default app
