@@ -4,6 +4,12 @@ import { initialSequelize } from "../utils/sql.js";
 const sequelize = initialSequelize();
 
 export const product = (await sequelize).define('MasterProducts',{
+    productID:{
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true, // Auto-incrementing supplierID
+    },
     productName:{
         type: DataTypes.STRING(128),
         allowNull: false,
@@ -16,7 +22,6 @@ export const product = (await sequelize).define('MasterProducts',{
         type: DataTypes.STRING(48),
         allowNull: false,
         unique: true,  
-        primaryKey: true,
     },
     productType:{
         type: DataTypes.ENUM('finished', 'estimated'),

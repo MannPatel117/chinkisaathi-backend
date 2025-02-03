@@ -1,6 +1,7 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { product } from "../model/product.model.js";
-
+import { Inventory } from "../model/inventory.model.js"
+import { InventoryDetails } from '../model/inventoryDetails.modell.js'
 /*
     Function Name - createProduct
     Functionality - Creates Product
@@ -79,6 +80,23 @@ import { product } from "../model/product.model.js";
         status,
         });
 
+        const inventories = await Inventory.findAll({
+            attributes: ['inventoryID']
+        });
+
+        const inventoryDetailsPromises = inventories.map(inventory => {
+            return InventoryDetails.create({
+                inventoryID: inventory.inventoryID,  // Link to existing inventory
+                productID: newProduct.productID,    // Link to the newly created product
+                quantity: 0,                        // Default quantity
+                lowWarning: 20,                     // Default low warning
+                status: 'active',                   // Default status
+            });
+        });
+
+        // Wait for all InventoryDetails to be created
+        await Promise.all(inventoryDetailsPromises);
+
         // Respond with the created product
         return res
         .status(200)
@@ -117,10 +135,10 @@ import { product } from "../model/product.model.js";
 
     const getProduct = async (req, res) => {
     try {
-              let barcode= req.params.barcode;
+              let id= req.params.id;
               const _product = await product.findOne({
                 where: {
-                    barcode: barcode,
+                    productID: id,
                 }
               });
           
@@ -150,16 +168,16 @@ import { product } from "../model/product.model.js";
 
     const updateProduct = async (req, res) => {
             try {
-              const  barcode  = req.params.barcode; 
+              const  id  = req.params.id; 
               const updates = req.body; // JSON body containing the fields to update
           
               // Perform the update
               await product.update(updates, {
-                where: { barcode: barcode }
+                where: { productID: id }
               });
           
               const updatedProduct = await product.findOne({
-                where: { barcode: barcode }
+                where: { productID: id }
               });
           
               return res
@@ -181,10 +199,10 @@ import { product } from "../model/product.model.js";
 
     const deleteProduct = async (req, res) => {
             try {
-            const barcode  = req.params.barcode; 
+            const id  = req.params.id; 
             const role = req.user.role;
             const foundProduct = await product.findOne({
-              where: { barcode: barcode }
+              where: { productID: id }
             });
             
             if (!foundProduct) {
@@ -201,9 +219,10 @@ import { product } from "../model/product.model.js";
             
             const productName = foundProduct.dataValues.aliasName;
             await product.destroy({
-                where: { barcode: barcode }
+                where: { productID: id },
+                force: true,
             });
-          
+            
             return res
               .status(200)
               .json(new ApiResponse(200, 

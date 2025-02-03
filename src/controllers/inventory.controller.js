@@ -1,6 +1,7 @@
 import { Inventory } from '../model/inventory.model.js'
 import { ApiResponse } from "../utils/ApiResponse.js";
-
+import { product } from '../model/product.model.js';
+import { InventoryDetails } from '../model/inventoryDetails.modell.js'
 
 /*
     Function Name - createInventory
@@ -10,6 +11,18 @@ import { ApiResponse } from "../utils/ApiResponse.js";
  const createInventory = async (req, res) => {
     try {
       const newInventory = await Inventory.create(req.body);
+    const productIDs = await product.findAll({
+        attributes: ['productID'],
+      });
+      const inventoryDetailsPromises = productIDs.map(product => {
+        return InventoryDetails.create({
+          inventoryID: newInventory.inventoryID,  // Associate with the new Inventory
+          productID: product.productID,          // Use the productID from MasterProduct
+          quantity: 0,                           // Set default quantity (or adjust as needed)
+          lowWarning: 20,                        // Default low warning (adjust as needed)
+          status: 'active',                      // Default status (adjust as needed)
+        });
+      });
       return res
       .status(201)
       .json(new ApiResponse(201, newInventory, "Inventory created", true));
@@ -125,7 +138,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
  const deleteInventory = async (req, res) => {
     try {
       const { id } = req.params;
-      const deleted = await Inventory.destroy({ where: { inventoryID: id } });
+      const deleted = await Inventory.destroy({ where: { inventoryID: id }, force: true });
   
       if (!deleted) {
         return res

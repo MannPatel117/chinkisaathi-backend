@@ -48,6 +48,7 @@ CREATE TABLE `adminUsers` (
 -- PRODUCTS SCRIPT
 
 CREATE TABLE `masterProduct` (
+    `productID` INT NOT NULL AUTO_INCREMENT,
     `productName` VARCHAR(128) NOT NULL,
     `aliasName` VARCHAR(64) NOT NULL,
     `barcode` VARCHAR(48) NOT NULL,
@@ -63,7 +64,7 @@ CREATE TABLE `masterProduct` (
     `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deletedAt` DATETIME DEFAULT NULL,
-    PRIMARY KEY (`barcode`)
+    PRIMARY KEY (`productID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ACCOUNTS SCRIPT
@@ -107,4 +108,21 @@ CREATE TABLE Users (
     rewardPoint INT DEFAULT 0,           -- Reward points, defaults to 0
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when created
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Auto-updates when the record is modified
+);
+
+-- INVENTORY DETAILS
+
+CREATE TABLE inventoryDetails (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    inventoryID INT NOT NULL,
+    productID INT NOT NULL,
+    quantity INT DEFAULT 0,
+    lowWarning INT DEFAULT 20,
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deletedAt TIMESTAMP NULL,
+
+    CONSTRAINT fk_inventory FOREIGN KEY (inventoryID) REFERENCES inventory(inventoryID) ON DELETE CASCADE,
+    CONSTRAINT fk_product FOREIGN KEY (productID) REFERENCES masterproduct(productID) ON DELETE CASCADE
 );

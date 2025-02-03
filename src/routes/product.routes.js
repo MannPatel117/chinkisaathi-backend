@@ -5,9 +5,9 @@ import { createProduct, getProduct, updateProduct, deleteProduct, allProduct, pr
 const router = Router()
 
 router.route("/product").post(verifyJWT, createProduct)
-router.route("/product/:barcode").get(verifyJWT, getProduct)
-router.route('/product/:barcode').patch(verifyJWT, updateProduct)
-router.route('/product/:barcode').delete(verifyJWT, deleteProduct)
+router.route("/product/:id").get(verifyJWT, getProduct)
+router.route('/product/:id').patch(verifyJWT, updateProduct)
+router.route('/product/:id').delete(verifyJWT, deleteProduct)
 router.route("/").get(verifyJWT, allProduct)
 router.route("/stats").get(verifyJWT, productStats)
 
