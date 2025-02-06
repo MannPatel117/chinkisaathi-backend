@@ -1,5 +1,6 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { adminUsers } from '../model/adminUser.model.js'
+import { asyncHandler } from "../utils/asyncHandler.js";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken"
 
@@ -130,7 +131,7 @@ import jwt from "jsonwebtoken"
                         firstName: user.firstName,
                         lastName: user.lastName,
                         role: user.role,
-                        branch: user.branch
+                        inventory: user.inventory
                     }
                 }, "Login Successful", true));
       
@@ -301,4 +302,33 @@ import jwt from "jsonwebtoken"
         }
     };
 
-export { createAdmin, loginAdmin, getAdmin, updateAdmin, deleteAdmin, getAdminUsers }
+
+    /*
+    Function Name - verifySession
+    Functionality - Function to check Admin session validity
+  */
+  
+
+  const verifySession = asyncHandler(async(req, res) => {
+    try { 
+      const role = req.query.role;
+      const token = req.header("Authorization")?.replace("Bearer ", "");
+      const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+      if (decodedToken && decodedToken.role == role) {
+          return res.status(200).json(
+              new ApiResponse(200, "", "Success", "Success")
+          )
+      } else{
+        return res.status(404).json(
+          new ApiResponse(404, error, "Unauthorized", "Invalid Role")
+       )
+      }
+      
+    } catch (error) {
+      return res.status(201).json(
+          new ApiResponse(201, error, "Failed Action", "Token Error")
+      )
+    }
+  })
+
+export { createAdmin, loginAdmin, getAdmin, updateAdmin, deleteAdmin, getAdminUsers, verifySession }
