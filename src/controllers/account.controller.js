@@ -1,5 +1,6 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Account } from "../model/account.model.js";
+import { Op } from "sequelize";
 
 /*
     Function Name - createAccount
@@ -346,7 +347,7 @@ const getBasicAccountDetails = async (req, res) => {
 
 const allAccount = async (req, res) => {
   try {
-    const { pagination, page, limit, subGroup } = req.query;
+    const { pagination, page, limit, subGroup, search } = req.query;
 
     if (pagination === 'true') {
       // Parse page and limit parameters or set defaults
@@ -361,6 +362,13 @@ const allAccount = async (req, res) => {
         query.subGroup = subGroup;
       }
 
+      if (search) {
+              query[Op.or] = [
+                { phone_Number: { [Op.like]: `%${search}%` } },
+                { accountName: { [Op.like]: `%${search}%` } },
+                { aliasName: { [Op.like]: `%${search}%` } },
+              ];
+      }
       // Fetch paginated data
       const { count, rows } = await Account.findAndCountAll({
         offset: offset,
