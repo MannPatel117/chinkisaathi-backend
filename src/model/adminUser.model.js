@@ -37,9 +37,10 @@ export const adminUsers =(await sequelize).define('AdminUsers',{
         type: DataTypes.ENUM('superadmin', 'admin', 'storeadmin', 'store', 'factoryadmin', 'factory', 'crmmaster', 'crm'),
         defaultValue: 'store',
     },
-    branch:{
-        type: DataTypes.STRING(24),
-        allowNull: false,
+    inventory: {
+        type: DataTypes.JSON,  // Store array as JSON
+        allowNull: true,
+        defaultValue: [],
     },
     phnnumber:{
         type: DataTypes.STRING(10),

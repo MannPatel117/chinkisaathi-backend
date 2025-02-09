@@ -1,3 +1,22 @@
+-- INVENTORY SCRIPT
+
+CREATE TABLE `inventory` (
+    `inventoryID` INT PRIMARY KEY AUTO_INCREMENT,
+    `inventoryName` VARCHAR(255),
+    `addressLine1` VARCHAR(255),
+    `addressLine2` VARCHAR(255),
+    `addressLine3` VARCHAR(255),
+    `city` VARCHAR(100),
+    `state` VARCHAR(100),
+    `pincode` INT,
+    `billNumber` INT NOT NULL DEFAULT 0,
+    `invoiceNumber` INT NOT NULL DEFAULT 0,
+    `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deletedAt` DATETIME NULL
+);
+
+
 -- ADMIN USER SCRIPT
 
 CREATE TABLE `adminUsers` (
@@ -6,7 +25,7 @@ CREATE TABLE `adminUsers` (
     `lastName` VARCHAR(24) NOT NULL,
     `password` VARCHAR(128) NOT NULL,
     `role` ENUM('superadmin', 'admin', 'storeadmin', 'store', 'factoryadmin', 'factory', 'crmmaster', 'crm') DEFAULT 'store',
-    `branch` VARCHAR(24) NOT NULL,
+    `inventory` JSON DEFAULT '[]',
     `phnnumber` VARCHAR(10) DEFAULT NULL,
     `emailid` VARCHAR(45) DEFAULT NULL,
     `addressLine1` VARCHAR(256) DEFAULT NULL,
@@ -29,6 +48,7 @@ CREATE TABLE `adminUsers` (
 -- PRODUCTS SCRIPT
 
 CREATE TABLE `masterProduct` (
+    `productID` INT NOT NULL AUTO_INCREMENT,
     `productName` VARCHAR(128) NOT NULL,
     `aliasName` VARCHAR(64) NOT NULL,
     `barcode` VARCHAR(48) NOT NULL,
@@ -40,11 +60,12 @@ CREATE TABLE `masterProduct` (
     `wholeSalePrice` INT NOT NULL,
     `gst` INT NOT NULL,
     `hsnCode` VARCHAR(24) DEFAULT NULL,
+    `category` VARCHAR(24) DEFAULT "others",
     `status` ENUM('active', 'inactive') DEFAULT 'active',
     `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deletedAt` DATETIME DEFAULT NULL,
-    PRIMARY KEY (`barcode`)
+    PRIMARY KEY (`productID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ACCOUNTS SCRIPT
@@ -88,4 +109,21 @@ CREATE TABLE Users (
     rewardPoint INT DEFAULT 0,           -- Reward points, defaults to 0
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when created
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Auto-updates when the record is modified
+);
+
+-- INVENTORY DETAILS
+
+CREATE TABLE inventoryDetails (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    inventoryID INT NOT NULL,
+    productID INT NOT NULL,
+    quantity INT DEFAULT 0,
+    lowWarning INT DEFAULT 20,
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deletedAt TIMESTAMP NULL,
+
+    CONSTRAINT fk_inventory FOREIGN KEY (inventoryID) REFERENCES inventory(inventoryID) ON DELETE CASCADE,
+    CONSTRAINT fk_product FOREIGN KEY (productID) REFERENCES masterproduct(productID) ON DELETE CASCADE
 );

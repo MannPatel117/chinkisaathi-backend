@@ -1,6 +1,8 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { product } from "../model/product.model.js";
-
+import { Inventory } from "../model/inventory.model.js"
+import { InventoryDetails } from '../model/inventoryDetails.modell.js'
+import { Op } from "sequelize";
 /*
     Function Name - createProduct
     Functionality - Creates Product
@@ -22,19 +24,15 @@ import { product } from "../model/product.model.js";
         gst,
         hsnCode,
         status,
+        category
         } = req.body;
 
         // Validate required fields
         if (
         !productName ||
         !aliasName ||
-        !barcode ||
-        !mrp ||
-        !discount ||
-        !sellingPrice ||
-        !wholeSalePrice ||
-        !gst
-        ) {
+        !barcode
+        ) { 
             return res
             .status(400)
             .json(
@@ -77,7 +75,25 @@ import { product } from "../model/product.model.js";
         gst,
         hsnCode,
         status,
+        category
         });
+
+        const inventories = await Inventory.findAll({
+            attributes: ['inventoryID']
+        });
+
+        const inventoryDetailsPromises = inventories.map(inventory => {
+            return InventoryDetails.create({
+                inventoryID: inventory.inventoryID,  // Link to existing inventory
+                productID: newProduct.productID,    // Link to the newly created product
+                quantity: 0,                        // Default quantity
+                lowWarning: 20,                     // Default low warning
+                status: 'active',                   // Default status
+            });
+        });
+
+        // Wait for all InventoryDetails to be created
+        await Promise.all(inventoryDetailsPromises);
 
         // Respond with the created product
         return res
@@ -86,7 +102,7 @@ import { product } from "../model/product.model.js";
             new ApiResponse(
             200,
             newProduct,
-            "Product created successfully",
+            "Product Created",
             true
             )
         );
@@ -117,10 +133,10 @@ import { product } from "../model/product.model.js";
 
     const getProduct = async (req, res) => {
     try {
-              let barcode= req.params.barcode;
+              let id= req.params.id;
               const _product = await product.findOne({
                 where: {
-                    barcode: barcode,
+                    productID: id,
                 }
               });
           
@@ -139,7 +155,7 @@ import { product } from "../model/product.model.js";
               console.error('Error finding product:', error);
               return res
               .status(500)
-              .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+              .json(new ApiResponse(500, "Please contact Support", "Server Error", false));
         }
     };
 
@@ -150,27 +166,27 @@ import { product } from "../model/product.model.js";
 
     const updateProduct = async (req, res) => {
             try {
-              const  barcode  = req.params.barcode; 
+              const  id  = req.params.id; 
               const updates = req.body; // JSON body containing the fields to update
           
               // Perform the update
               await product.update(updates, {
-                where: { barcode: barcode }
+                where: { productID: id }
               });
           
               const updatedProduct = await product.findOne({
-                where: { barcode: barcode }
+                where: { productID: id }
               });
           
               return res
                 .status(200)
                 .json(new ApiResponse(200, 
-                    updatedProduct, "Product updated", true));
+                    updatedProduct, "Product Updated", true));
             } catch (error) {
               console.error('Error updating product:', error);
               return res
               .status(500)
-              .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+              .json(new ApiResponse(500, "Please contact Support", "Server Error", false));
             }
     };
 
@@ -181,10 +197,10 @@ import { product } from "../model/product.model.js";
 
     const deleteProduct = async (req, res) => {
             try {
-            const barcode  = req.params.barcode; 
+            const id  = req.params.id; 
             const role = req.user.role;
             const foundProduct = await product.findOne({
-              where: { barcode: barcode }
+              where: { productID: id }
             });
             
             if (!foundProduct) {
@@ -201,18 +217,19 @@ import { product } from "../model/product.model.js";
             
             const productName = foundProduct.dataValues.aliasName;
             await product.destroy({
-                where: { barcode: barcode }
+                where: { productID: id },
+                force: true,
             });
-          
+            
             return res
               .status(200)
               .json(new ApiResponse(200, 
-                  `${productName} is successfully deleted`, "Product deleted", true));
+                  `${productName} is successfully deleted`, "Product Deleted", true));
             } catch (error) {
               console.error('Error deleting product:', error);
               return res
               .status(500)
-              .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+              .json(new ApiResponse(500, "Please contact Support", "Server Error", false));
             }
     };
 
@@ -221,69 +238,73 @@ import { product } from "../model/product.model.js";
     Functionality - Function to fetch all products
 */
 
-    const allProduct = async (req, res) => {
-        try {
-          const { pagination, page, limit, productType, status } = req.query;
-      
-          if (pagination === 'true') {
-            // Parse page and limit parameters or set defaults
-            const pageNumber = parseInt(page, 10) || 1; // Default to page 1
-            const pageSize = parseInt(limit, 10) || 10; // Default to 10 items per page
-            const offset = (pageNumber - 1) * pageSize;
-            const query = { deletedAt: null }
-
-            if(productType){
-                query.productType = productType;
-            }
-
-            if(status){
-                query.status = status;
-            }
-
-            // Fetch paginated data
-            const { count, rows } = await product.findAndCountAll({
-              offset: offset,
-              limit: pageSize,
-              where: query
-            });
-      
-            return res
-            .status(200)
-            .json(new ApiResponse(200, 
-              { 
-                pagination: {
-                    totalRecords: count,
-                    currentPage: pageNumber,
-                    totalPages: Math.ceil(count / pageSize),
-                },
-                data: rows
-               }, "Products fetched", true));
-          } else {
-            const query = { deletedAt: null }
-
-            if(productType){
-                query.productType = productType;
-            }
-
-            if(status){
-                query.status = status;
-            }
-            const allProduct = await product.findAll({
-              where: query, 
-            });
-      
-            return res
-            .status(200)
-            .json(new ApiResponse(200, 
-                allProduct, "All Products fetched", true));
-          }
-        } catch (error) {
-          console.error('Error fetching Products', error);
-          return res
-          .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
-        }
-    };
+ const allProduct = async (req, res) => {
+    try {
+      const { pagination, page, limit, productType, status, search } = req.query;
+  
+      // Parse pagination parameters
+      const pageNumber = parseInt(page, 10) || 1;
+      const pageSize = parseInt(limit, 10) || 10;
+      const offset = (pageNumber - 1) * pageSize;
+  
+      // Construct base query
+      const query = { deletedAt: null };
+  
+      if (productType) {
+        query.productType = productType;
+      }
+  
+      if (status) {
+        query.status = status;
+      }
+  
+      // Search Logic: Look for search term in barcode, productName, and aliasName
+      if (search) {
+        query[Op.or] = [
+          { barcode: { [Op.like]: `%${search}%` } },
+          { productName: { [Op.like]: `%${search}%` } },
+          { aliasName: { [Op.like]: `%${search}%` } },
+        ];
+      }
+  
+      // Handle paginated request
+      if (pagination === 'true') {
+        const { count, rows } = await product.findAndCountAll({
+          offset,
+          limit: pageSize,
+          where: query,
+          raw: true, // Return plain JSON instead of Sequelize instances
+        });
+  
+        return res.status(200).json(
+          new ApiResponse(
+            200,
+            {
+              pagination: {
+                totalRecords: count,
+                currentPage: pageNumber,
+                totalPages: Math.ceil(count / pageSize),
+              },
+              data: rows,
+            },
+            'Products fetched',
+            true
+          )
+        );
+      }
+  
+      // Fetch all products without pagination
+      const allProducts = await product.findAll({
+        where: query,
+        raw: true,
+      });
+  
+      return res.status(200).json(new ApiResponse(200, allProducts, 'All Products fetched', true));
+    } catch (error) {
+      console.error('Error fetching Products:', error);
+      return res.status(500).json(new ApiResponse(500, 'Please contact Support', 'Server Error', false));
+    }
+  };
 
 /*
     Function Name - productStats
@@ -309,7 +330,7 @@ import { product } from "../model/product.model.js";
         console.error('Error fetching stats', error);
               return res
               .status(500)
-              .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+              .json(new ApiResponse(500, "Please contact Support", "Server Error", false));
     }
     };
 

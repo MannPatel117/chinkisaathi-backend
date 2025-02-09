@@ -1,5 +1,6 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { adminUsers } from '../model/adminUser.model.js'
+import { asyncHandler } from "../utils/asyncHandler.js";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken"
 
@@ -82,7 +83,7 @@ import jwt from "jsonwebtoken"
           return res
             .status(409)
             .json(
-              new ApiResponse(409, "Could not generate user, please try again later "+ error, "Action Failed",false)
+              new ApiResponse(409, "Error - Contact Support", "Action Failed",false)
          );
         }
     };
@@ -130,15 +131,14 @@ import jwt from "jsonwebtoken"
                         firstName: user.firstName,
                         lastName: user.lastName,
                         role: user.role,
-                        branch: user.branch
+                        inventory: user.inventory
                     }
                 }, "Login Successful", true));
       
         } catch (error) {
-          console.error('Error logging in admin:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));;
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));;
         }
     };
 
@@ -168,10 +168,9 @@ import jwt from "jsonwebtoken"
                 user, "User found", true));
       
         } catch (error) {
-          console.error('Error finding admin user:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));
         }
     };
 
@@ -200,10 +199,9 @@ import jwt from "jsonwebtoken"
             .json(new ApiResponse(200, 
                 updatedUser, "User updated", true));
         } catch (error) {
-          console.error('Error updating user:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));
         }
     };
 
@@ -242,10 +240,9 @@ import jwt from "jsonwebtoken"
           .json(new ApiResponse(200, 
               `${userName} is successfully deleted`, "User deleted", true));
         } catch (error) {
-          console.error('Error deleting user:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));
         }
     };
 
@@ -294,11 +291,39 @@ import jwt from "jsonwebtoken"
               allUsers, "All Admin User fetched", true));
           }
         } catch (error) {
-          console.error('Error fetching admin users:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));
         }
     };
 
-export { createAdmin, loginAdmin, getAdmin, updateAdmin, deleteAdmin, getAdminUsers }
+
+    /*
+    Function Name - verifySession
+    Functionality - Function to check Admin session validity
+  */
+  
+
+  const verifySession = asyncHandler(async(req, res) => {
+    try { 
+      const role = req.query.role;
+      const token = req.header("Authorization")?.replace("Bearer ", "");
+      const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+      if (decodedToken && decodedToken.role == role) {
+          return res.status(200).json(
+              new ApiResponse(200, "", "Success", "Success")
+          )
+      } else{
+        return res.status(404).json(
+          new ApiResponse(404, error, "Unauthorized", "Invalid Role")
+       )
+      }
+      
+    } catch (error) {
+      return res.status(201).json(
+          new ApiResponse(201, error, "Failed Action", "Token Error")
+      )
+    }
+  })
+
+export { createAdmin, loginAdmin, getAdmin, updateAdmin, deleteAdmin, getAdminUsers, verifySession }
