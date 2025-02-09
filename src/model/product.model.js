@@ -55,6 +55,10 @@ export const product = (await sequelize).define('MasterProducts',{
         type: DataTypes.STRING(24),
         allowNull: true, 
     },
+    category:{
+        type: DataTypes.STRING(24),
+        allowNull: true, 
+    },
     status:{
         type: DataTypes.ENUM('active', 'inactive'),
         defaultValue: 'active',

@@ -60,6 +60,7 @@ CREATE TABLE `masterProduct` (
     `wholeSalePrice` INT NOT NULL,
     `gst` INT NOT NULL,
     `hsnCode` VARCHAR(24) DEFAULT NULL,
+    `category` VARCHAR(24) DEFAULT "others",
     `status` ENUM('active', 'inactive') DEFAULT 'active',
     `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
