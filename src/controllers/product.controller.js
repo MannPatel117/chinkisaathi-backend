@@ -155,7 +155,7 @@ import { Op } from "sequelize";
               console.error('Error finding product:', error);
               return res
               .status(500)
-              .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+              .json(new ApiResponse(500, "Please contact Support", "Server Error", false));
         }
     };
 
@@ -186,7 +186,7 @@ import { Op } from "sequelize";
               console.error('Error updating product:', error);
               return res
               .status(500)
-              .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+              .json(new ApiResponse(500, "Please contact Support", "Server Error", false));
             }
     };
 
@@ -229,7 +229,7 @@ import { Op } from "sequelize";
               console.error('Error deleting product:', error);
               return res
               .status(500)
-              .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+              .json(new ApiResponse(500, "Please contact Support", "Server Error", false));
             }
     };
 
@@ -302,7 +302,7 @@ import { Op } from "sequelize";
       return res.status(200).json(new ApiResponse(200, allProducts, 'All Products fetched', true));
     } catch (error) {
       console.error('Error fetching Products:', error);
-      return res.status(500).json(new ApiResponse(500, 'Please contact Mann', 'Server Error', false));
+      return res.status(500).json(new ApiResponse(500, 'Please contact Support', 'Server Error', false));
     }
   };
 
@@ -330,7 +330,7 @@ import { Op } from "sequelize";
         console.error('Error fetching stats', error);
               return res
               .status(500)
-              .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+              .json(new ApiResponse(500, "Please contact Support", "Server Error", false));
     }
     };
 

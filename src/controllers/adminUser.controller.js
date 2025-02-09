@@ -83,7 +83,7 @@ import jwt from "jsonwebtoken"
           return res
             .status(409)
             .json(
-              new ApiResponse(409, "Could not generate user, please try again later "+ error, "Action Failed",false)
+              new ApiResponse(409, "Error - Contact Support", "Action Failed",false)
          );
         }
     };
@@ -136,10 +136,9 @@ import jwt from "jsonwebtoken"
                 }, "Login Successful", true));
       
         } catch (error) {
-          console.error('Error logging in admin:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));;
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));;
         }
     };
 
@@ -169,10 +168,9 @@ import jwt from "jsonwebtoken"
                 user, "User found", true));
       
         } catch (error) {
-          console.error('Error finding admin user:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));
         }
     };
 
@@ -201,10 +199,9 @@ import jwt from "jsonwebtoken"
             .json(new ApiResponse(200, 
                 updatedUser, "User updated", true));
         } catch (error) {
-          console.error('Error updating user:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));
         }
     };
 
@@ -243,10 +240,9 @@ import jwt from "jsonwebtoken"
           .json(new ApiResponse(200, 
               `${userName} is successfully deleted`, "User deleted", true));
         } catch (error) {
-          console.error('Error deleting user:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));
         }
     };
 
@@ -295,10 +291,9 @@ import jwt from "jsonwebtoken"
               allUsers, "All Admin User fetched", true));
           }
         } catch (error) {
-          console.error('Error fetching admin users:', error);
           return res
           .status(500)
-          .json(new ApiResponse(500, "Please contact Mann", "Server Error", false));
+          .json(new ApiResponse(500, "Please contact support", "Server Error", false));
         }
     };
 
