@@ -41,9 +41,13 @@ export const User = (await sequelize).define(
       allowNull: true,
     },
     rewardPoint: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
       defaultValue: 0,
+    },
+    customerType:{
+      type: DataTypes.ENUM('new', 'existing'),
+      defaultValue: 'new',
     },
     createdAt: {
       type: DataTypes.DATE,

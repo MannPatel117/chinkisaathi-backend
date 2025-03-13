@@ -62,7 +62,7 @@ export const InventoryDetails = (await sequelize).define('InventoryDetails', {
 Inventory.hasMany(InventoryDetails, { foreignKey: 'inventoryID' });
 product.hasMany(InventoryDetails, { foreignKey: 'productID' });
 
-InventoryDetails.belongsTo(Inventory, { foreignKey: 'inventoryID' });
+InventoryDetails.belongsTo(Inventory, { foreignKey: "inventoryID", as: "inventoryDetail" });
 InventoryDetails.belongsTo(product, { foreignKey: 'productID' });
 
 export default InventoryDetails;

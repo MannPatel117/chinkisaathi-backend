@@ -2,7 +2,8 @@ import { Sequelize, DataTypes } from "sequelize";
 import { initialSequelize } from "../utils/sql.js";
 import { Inventory } from './inventory.model.js';
 import { product } from './product.model.js';
-
+import { AccountsTransaction } from './accountTransaction.model.js';
+import { BillMaster } from './bills.model.js'
 const sequelize = initialSequelize();
 
 export const InventoryTransaction = (await sequelize).define('InventoryTransaction', {
@@ -34,8 +35,8 @@ export const InventoryTransaction = (await sequelize).define('InventoryTransacti
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: product, // change
-            key: 'productID'
+            model: AccountsTransaction, // change
+            key: 'transactionID'
         },
         onDelete: 'CASCADE'
     },
@@ -43,8 +44,8 @@ export const InventoryTransaction = (await sequelize).define('InventoryTransacti
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: product, // change
-            key: 'productID'
+            model: BillMaster, // change
+            key: 'billID'
         },
         onDelete: 'CASCADE'
     },
@@ -60,7 +61,10 @@ export const InventoryTransaction = (await sequelize).define('InventoryTransacti
         type: DataTypes.STRING,
         allowNull: true,
     },
-    
+    remark:{
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -76,12 +80,5 @@ export const InventoryTransaction = (await sequelize).define('InventoryTransacti
     timestamps: true,
     paranoid: true,
 });
-
-// Establish associations
-Inventory.hasMany(InventoryDetails, { foreignKey: 'inventoryID' });
-product.hasMany(InventoryDetails, { foreignKey: 'productID' });
-
-InventoryDetails.belongsTo(Inventory, { foreignKey: 'inventoryID' });
-InventoryDetails.belongsTo(product, { foreignKey: 'productID' });
 
 export default InventoryTransaction;
