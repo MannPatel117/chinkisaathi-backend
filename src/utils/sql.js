@@ -1,6 +1,9 @@
 import { Sequelize } from "sequelize";
-import dotenv from "dotenv";
 const initialSequelize = async() => {
+   
+    console.log(process.env.DATABASE)
+    console.log(process.env.USER)
+    console.log(process.env.PASSWORD)
     const sequelize = new Sequelize(
         process.env.DATABASE,
         process.env.USER,
