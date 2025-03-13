@@ -12,6 +12,10 @@ export const Inventory = (await sequelize).define(
         unique: true,
         autoIncrement: true, // Auto-incrementing supplierID
     },
+    inventoryNameAbbri: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     inventoryName: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -41,14 +45,44 @@ export const Inventory = (await sequelize).define(
       allowNull: true,
     },
     billNumber: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: 0,
+      defaultValue: "a-0",
     },
     invoiceNumber: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
+    },
+    paymentVoucherDocNo: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "PV-001",
+    },
+    receiptVoucherDocNo: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "RV-001",
+    },
+    goodsReceiptDocNo: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "GR-001",
+    },
+    bankAmount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
+    cashAmount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
+    otherAmount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
     },
     updatedAt: {
       type: DataTypes.DATE,
@@ -60,6 +94,10 @@ export const Inventory = (await sequelize).define(
         allowNull: false,
         defaultValue: Sequelize.NOW,
     },
+    phoneNumber:{
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   {
     tableName: "inventory",

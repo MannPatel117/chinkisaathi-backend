@@ -1,5 +1,8 @@
 import { User } from "../model/users.model.js"; // Adjust the path if necessary
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Op } from "sequelize";
+import { BillMaster } from "../model/bills.model.js";
+import { RewardsPoint } from "../model/rewardPoints.model.js";
 
 /*
     Function Name - createUser
@@ -18,6 +21,7 @@ const createUser = async (req, res) => {
       state,
       pincode,
       rewardPoint,
+      customerType
     } = req.body;
 
     // Validate required fields
@@ -62,6 +66,7 @@ const createUser = async (req, res) => {
       state,
       pincode,
       rewardPoint,
+      customerType
     });
 
     // Return a successful response
@@ -96,8 +101,8 @@ const getUserById = async (req, res) => {
     const user = await User.findOne({ where: { phoneNumber } });
     if (!user) {
       return res
-        .status(404)
-        .json(new ApiResponse(404, "User not found", "Not Found", false));
+        .status(200)
+        .json(new ApiResponse(200, "User not found", "Not Found", false));
     }
 
     return res
@@ -202,13 +207,22 @@ const deleteUser = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const { page, limit, sortField, sortOrder } = req.query;
+    const { page, limit, sortField, sortOrder, search, pagination, customerType } = req.query;
 
     // Pagination setup
+    const query ={ }
     const pageNumber = parseInt(page, 10) || 1;
     const pageSize = parseInt(limit, 10) || 10;
     const offset = (pageNumber - 1) * pageSize;
-
+    if (search) {
+        query[Op.or] = [
+          { name: { [Op.like]: `%${search}%` } },
+          { phoneNumber: { [Op.like]: `%${search}%` } }
+        ];
+      }
+      if(customerType){
+        query.customerType = customerType;
+      }
     // Default order, only apply sorting if both sortField and sortOrder are provided
     let order = [];
     if (sortField && sortOrder) {
@@ -220,29 +234,51 @@ const getAllUsers = async (req, res) => {
         order = [[sortField, sortOrder]];
       }
     }
+    if(pagination == 'true'){
+      const { count, rows } = await User.findAndCountAll({
+        offset: offset,
+        limit: pageSize,
+        where: query,
+        order: order, // Apply sorting if specified, otherwise no sorting
+      });
+
+      return res.status(200).json(
+        new ApiResponse(
+          200,
+          {
+            pagination: {
+              totalRecords: count,
+              currentPage: pageNumber,
+              totalPages: Math.ceil(count / pageSize),
+            },
+            data: rows,
+          },
+          "Users fetched successfully",
+          true
+        )
+      );
+    } else{
+      const { count, rows } = await User.findAndCountAll({
+        where: query,
+        order: order, // Apply sorting if specified, otherwise no sorting
+      });
+
+      return res.status(200).json(
+        new ApiResponse(
+          200,
+          
+          rows
+          ,
+          "Users fetched successfully",
+          true
+        )
+      );
+    }
 
     // Fetch paginated and optionally sorted users
-    const { count, rows } = await User.findAndCountAll({
-      offset: offset,
-      limit: pageSize,
-      order: order, // Apply sorting if specified, otherwise no sorting
-    });
+    
 
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          pagination: {
-            totalRecords: count,
-            currentPage: pageNumber,
-            totalPages: Math.ceil(count / pageSize),
-          },
-          data: rows,
-        },
-        "Users fetched successfully",
-        true
-      )
-    );
+    
   } catch (error) {
     console.error("Error fetching users:", error);
     return res
@@ -278,6 +314,92 @@ const usersStats = async (req, res) => {
   }
 };
 
+const getCustomerBills = async (req, res) => {
+  try {
+      const { phoneNumber } = req.query;
+
+      if (!phoneNumber) {
+          return res.status(400).json({ success: false, message: "Phone number is required." });
+      }
+
+      // Fetch all bills where phoneNumber matches
+      const bills = await BillMaster.findAll({
+          where: { phoneNumber: phoneNumber },
+          order: [['createdAt', 'DESC']], // Sort by latest bills first
+      });
+
+      if (bills.length === 0) {
+        return res
+        .status(200)
+        .json(new ApiResponse(200, [], "Bills not found", false));
+      }
+
+      // Calculate total lifetime amount spent by customer
+      const totalSpent = bills.reduce((sum, bill) => sum + bill.finalAmount, 0);
+
+      // Calculate total reward points used by customer
+      const totalRewardPointsUsed = bills.reduce((sum, bill) => sum + bill.rewardPointsUsed, 0);
+      const data = {
+          "totalSpent": totalSpent,
+          "totalRewardPointsUsed": totalRewardPointsUsed,
+          "bills": bills
+        }
+        return res
+      .status(200)
+      .json(new ApiResponse(200, data, "Bills Found", true));
+    }
+     catch (error) {
+      console.error("Error fetching customer bills:", error);
+      return res.status(500).json({ success: false, message: "Internal Server Error." });
+  }
+};
+
+const getCustomerRewards = async (req, res) => {
+  try {
+      const { phoneNumber } = req.query;
+
+      if (!phoneNumber) {
+          return res.status(400).json({ success: false, message: "Phone number is required." });
+      }
+
+      // Fetch all bills where phoneNumber matches
+      const rewards = await RewardsPoint.findAll({
+          where: { phoneNumber: phoneNumber },
+          order: [['createdAt', 'DESC']], // Sort by latest bills first
+      });
+
+      if (rewards.length === 0) {
+        return res
+        .status(200)
+        .json(new ApiResponse(200, [], "Reward points history not found", false));
+      }
+
+      // Calculate total lifetime amount spent by customer
+      let totalEarned = 0;
+      let totalRedeemed = 0;
+      for(let reward of rewards){
+        if(reward.pointsAmount > 0){
+          totalEarned = totalEarned + reward.pointsAmount
+        } else if(reward.pointsAmount < 0){
+          totalRedeemed = totalRedeemed - reward.pointsAmount;
+        }
+      }
+      
+      const data = {
+          "totalEarned": totalEarned,
+          "totalRedeemed": totalRedeemed,
+          "rewards": rewards
+        }
+        return res
+      .status(200)
+      .json(new ApiResponse(200, data, "Rewards Found", true));
+    }
+     catch (error) {
+      console.error("Error fetching customer Rewards:", error);
+      return res.status(500).json({ success: false, message: "Internal Server Error." });
+  }
+};
+
 export {
   createUser,
   getUserById,
@@ -285,4 +407,6 @@ export {
   deleteUser,
   getAllUsers,
   usersStats,
+  getCustomerBills,
+  getCustomerRewards
 };

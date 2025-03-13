@@ -1,8 +1,7 @@
 import { Sequelize, DataTypes } from "sequelize";
 import { initialSequelize } from "../utils/sql.js";
 import { Account } from "./account.model.js";
-//import inventory in future
-
+import { Inventory } from './inventory.model.js'
 const sequelize = initialSequelize();
 
 export const AccountsTransaction = (await sequelize).define(
@@ -14,6 +13,11 @@ export const AccountsTransaction = (await sequelize).define(
             unique: true,
             autoIncrement: true, // Auto-incrementing supplierID
        },
+      transactionType: {
+        type: DataTypes.ENUM("sales", "purchase", "payment", "receipt"),
+        defaultValue: "purchase",
+        allowNull: false,
+      },
       challanNumber: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -34,23 +38,26 @@ export const AccountsTransaction = (await sequelize).define(
         },
         allowNull: false,
       },
+      inventory:{
+        type: DataTypes.INTEGER,
+        references: {
+          model: Inventory, // The referenced model
+          key: "inventoryID", // The primary key in the referenced model
+        },
+        allowNull: false,
+      },
       billNumber: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       billDate: {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      transactionType: {
-        type: DataTypes.ENUM("Supply", "Payment"),
-        defaultValue: "Supply",
-        allowNull: false,
-      },
       paymentType: {
         type: DataTypes.ENUM("Cash", "Online", "Cheque", "Other"),
-        defaultValue: "Cash",
-        allowNull: false,
+        defaultValue: null,
+        allowNull: true,
       },
       chequeNo: {
         type: DataTypes.STRING,
@@ -60,26 +67,28 @@ export const AccountsTransaction = (await sequelize).define(
         type: DataTypes.DATE,
         allowNull: true,
       },
-      transactionId: {
+      remark: {
         type: DataTypes.STRING,
         allowNull: true,
       },
       finalAmt: {
-        type: DataTypes.FLOAT, // Or DECIMAL if you need more precision
+        type: DataTypes.FLOAT, 
         allowNull: true,
-        validate: {
-          min: 0,
-        },
       },
-      location: {
+      actionBy:{
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       createdAt: {
           type: DataTypes.DATE,
           allowNull: false,
           defaultValue: Sequelize.NOW,
       },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+    },
     },
     {
       tableName: "accountsTransactions",

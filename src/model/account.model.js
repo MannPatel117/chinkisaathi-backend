@@ -57,14 +57,6 @@ export const Account = (await sequelize).define('Accounts',{
     gstNumber: {
         type: DataTypes.STRING,
     },
-    openingBalanceCredit: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-    },
-    openingBalanceDebit: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-    },
     email: {
         type: DataTypes.STRING(128),
     },

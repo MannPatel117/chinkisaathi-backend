@@ -1,6 +1,8 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Account } from "../model/account.model.js";
 import { Op } from "sequelize";
+import { InventoryAccountBalance } from '../model/inventoryAccountBalance.model.js';
+import { Inventory } from '../model/inventory.model.js';
 
 /*
     Function Name - createAccount
@@ -9,112 +11,95 @@ import { Op } from "sequelize";
 
 const createAccount = async (req, res) => {
   try {
-    // Destructure the fields from the request body
-    const {
-      accountName,
-      aliasName,
-      phone_Number,
-      addressLine1,
-      addressLine2,
-      city,
-      state,
-      pincode,
-      subGroup,
-      underGroup,
-      paymentTerm,
-      gstNumber,
-      openingBalanceCredit,
-      openingBalanceDebit,
-      email,
-    } = req.body;
+      // Destructure the fields from the request body
+      const {
+          accountName,
+          aliasName,
+          phone_Number,
+          addressLine1,
+          addressLine2,
+          city,
+          state,
+          pincode,
+          subGroup,
+          underGroup,
+          paymentTerm,
+          gstNumber,
+          openingBalanceCredit,
+          openingBalanceDebit,
+          email,
+      } = req.body;
 
-    // Validate required fields
-    if (!accountName || !aliasName || !phone_Number) {
-      return res
-        .status(400)
-        .json(
-          new ApiResponse(
-            400,
-            "accountName, aliasName, and phone_Number are required",
-            "Invalid Action",
-            false
-          )
-        );
-    }
+      // Validate required fields
+      if (!accountName || !aliasName || !phone_Number) {
+          return res
+              .status(400)
+              .json(new ApiResponse(400, "accountName, aliasName, and phone_Number are required", "Invalid Action", false));
+      }
 
-    // Check for existing account with the same aliasName
-    const existingAccount = await Account.findOne({
-      where: { aliasName: aliasName },
-    });
+      // Check for existing account with the same aliasName
+      const existingAccount = await Account.findOne({ where: { aliasName } });
+      if (existingAccount) {
+          return res
+              .status(409)
+              .json(new ApiResponse(409, "Account with this aliasName already exists", "Invalid Action", false));
+      }
 
-    if (existingAccount) {
-      return res
-        .status(409)
-        .json(
-          new ApiResponse(
-            409,
-            "Account with this aliasName already exists",
-            "Invalid Action",
-            false
-          )
-        );
-    }
+      // Step 1: Create the new Account
+      const newAccount = await Account.create({
+          accountName,
+          aliasName,
+          phone_Number,
+          addressLine1,
+          addressLine2,
+          city,
+          state,
+          pincode,
+          subGroup,
+          underGroup,
+          paymentTerm,
+          gstNumber,
+          openingBalanceCredit,
+          openingBalanceDebit,
+          email,
+      });
 
-    // Create a new account
-    const newAccount = await Account.create({
-      accountName,
-      aliasName,
-      phone_Number,
-      addressLine1,
-      addressLine2,
-      city,
-      state,
-      pincode,
-      subGroup,
-      underGroup,
-      paymentTerm,
-      gstNumber,
-      openingBalanceCredit,
-      openingBalanceDebit,
-      email,
-    });
+      // Step 2: Fetch all existing inventories
+      const inventories = await Inventory.findAll({ attributes: ['inventoryID'] });
 
-    // Respond with the created account
-    return res
-      .status(201)
-      .json(
-        new ApiResponse(201, newAccount, "Account created successfully", true)
+      // Step 3: Create InventoryAccountBalance entries for this new account
+      const balancePromises = inventories.map(inventory =>
+          InventoryAccountBalance.create({
+              inventoryID: inventory.inventoryID,
+              accountID: newAccount.supplierID,
+              openingBalance: 0,
+              closingBalance: 0,
+          })
       );
+      await Promise.all(balancePromises);
+
+      // Respond with the created account
+      return res
+          .status(201)
+          .json(new ApiResponse(201, newAccount, "Account created successfully with inventory balances", true));
+
   } catch (error) {
-    console.error("Error creating account:", error);
+      console.error("Error creating account:", error);
 
-    // Handle Sequelize unique constraint error
-    if (error.name === "SequelizeUniqueConstraintError") {
+      // Handle Sequelize unique constraint error
+      if (error.name === "SequelizeUniqueConstraintError") {
+          return res
+              .status(409)
+              .json(new ApiResponse(409, "Account with this aliasName already exists", "Invalid Action", false));
+      }
+
+      // Catch-all error handler
       return res
-        .status(409)
-        .json(
-          new ApiResponse(
-            409,
-            "Account with this aliasName already exists",
-            "Invalid Action",
-            false
-          )
-        );
-    }
-
-    // Catch-all error handler
-    return res
-      .status(500)
-      .json(
-        new ApiResponse(
-          500,
-          `Could not create account, please try again later: ${error.message}`,
-          "Action Failed",
-          false
-        )
-      );
+          .status(500)
+          .json(new ApiResponse(500, `Could not create account, please try again later: ${error.message}`, "Action Failed", false));
   }
 };
+
 
 /*
     Function Name - getAccount
@@ -195,7 +180,10 @@ const updateAccount = async (req, res) => {
 
     // Update account details
     const updatedAccount = await account.update(req.body);
-
+    const { openingBalanceCredit, openingBalanceDebit, balanceid } = req.body
+    const balanceAccount = await InventoryAccountBalance.findByPk(balanceid);
+    const updatedBalance = await balanceAccount.update({ openingBalance:openingBalanceCredit, closingBalance:openingBalanceDebit });
+    console.log(updatedBalance)
     return res
       .status(200)
       .json(
@@ -296,7 +284,7 @@ const getBasicAccountDetails = async (req, res) => {
   try {
     // Fetch only the specified fields from all accounts
     const accounts = await Account.findAll({
-      attributes: ['supplierID', 'accountName', 'aliasName', 'phone_Number'],
+      attributes: ['supplierID', 'accountName', 'aliasName', 'phone_Number', 'subGroup', 'underGroup', 'gstNumber'],
     });
 
     // Check if accounts exist
