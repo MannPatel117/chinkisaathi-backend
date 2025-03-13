@@ -138,4 +138,3 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-src/constant.js
