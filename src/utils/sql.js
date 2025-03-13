@@ -1,17 +1,19 @@
 import { Sequelize } from "sequelize";
-import { DB_CONFIG } from "../constant.js";
-
+import dotenv from "dotenv";
 const initialSequelize = async() => {
     const sequelize = new Sequelize(
-        DB_CONFIG.database,
-        DB_CONFIG.user,
-        DB_CONFIG.password,
+        process.env.DATABASE,
+        process.env.USER,
+        process.env.PASSWORD,
         {
-            host: DB_CONFIG.host,
-            dialect: DB_CONFIG.dialect
+            host: process.env.HOST,
+            dialect: 'mysql'
         }
     );
     return sequelize;
 }
     
 export  {initialSequelize};
+
+
+

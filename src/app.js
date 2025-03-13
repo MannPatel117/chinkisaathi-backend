@@ -16,16 +16,6 @@ app.get("/", (req, res) => {
     res.status(200).send("Hello From Chinki");
 });
 
-// app.get("/api/v1/test-db", async (req, res) => {
-//     try {
-//         const pool = await connectDB(); // Get the connection pool from connectDB
-//         const [rows] = await pool.query("SELECT * From adminusers AS result");
-//         res.status(200).json({ success: true, result: rows });
-//     } catch (error) {
-//         console.error("Database error:", error);
-//         res.status(500).json({ success: false, error: error.message });
-//     }
-// });
 
 //route imports
 import adminUser from './routes/adminUser.routes.js'
