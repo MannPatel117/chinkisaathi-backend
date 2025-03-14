@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
     const inventoryAccounts = (await import('./routes/inventoryAccount.routes.js')).default;
     const offers = (await import('./routes/offer.routes.js')).default;
     const bills = (await import('./routes/bill.routes.js')).default;
-  
+    console.log(bills, adminUser,inventory)
     // Setup routes after dynamic imports
     app.use('/api/v1/adminUser', adminUser);
     app.use('/api/v1/products', product);
