@@ -24,6 +24,7 @@ app.get("/", (req, res) => {
 
 //route imports
 (async () => {
+  console.log("Setting routes")
     const adminUser = (await import('./routes/adminUser.routes.js')).default;
     const product = (await import('./routes/product.routes.js')).default;
     const account = (await import('./routes/account.routes.js')).default;
