@@ -20,6 +20,8 @@ app.get("/", (req, res) => {
 });
 
 
+
+
 //route imports
 (async () => {
     const adminUser = (await import('./routes/adminUser.routes.js')).default;
@@ -44,7 +46,25 @@ app.get("/", (req, res) => {
     app.use('/api/v1/inventoryAccounts', inventoryAccounts);
     app.use('/api/v1/offers', offers);
     app.use('/api/v1/bills', bills);
-
+    listRoutes(app);
   })();
+
+
+  function listRoutes(app) {
+    console.log("\n📌 Registered Routes:");
+    app._router.stack.forEach((middleware) => {
+      if (middleware.route) {
+        console.log(`${Object.keys(middleware.route.methods).join(", ").toUpperCase()} ${middleware.route.path}`);
+      } else if (middleware.name === "router") {
+        middleware.handle.stack.forEach((subMiddleware) => {
+          if (subMiddleware.route) {
+            console.log(`${Object.keys(subMiddleware.route.methods).join(", ").toUpperCase()} ${subMiddleware.route.path}`);
+          }
+        });
+      }
+    });
+  }
+  
+  listRoutes(app);
 
 export default app
