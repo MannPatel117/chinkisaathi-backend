@@ -7,7 +7,16 @@ const initialSequelize = async() => {
         process.env.PASSWORD,
         {
             host: process.env.HOST,
-            dialect: 'mysql'
+            dialect: 'mysql',
+            dialectOptions: {
+                connectTimeout: 60000  // 60 seconds timeout
+            },
+            pool: {
+                max: 5,
+                min: 0,
+                acquire: 60000,  // 60 seconds
+                idle: 10000
+            }
         }
     );
     return sequelize;
