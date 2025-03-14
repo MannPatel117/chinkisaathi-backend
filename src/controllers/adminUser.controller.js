@@ -103,7 +103,7 @@ import jwt from "jsonwebtoken"
               userName: userName,
             }
           });
-          console.log(user)
+          console.log(user);
           if (!user) {
             return res
             .status(401)
