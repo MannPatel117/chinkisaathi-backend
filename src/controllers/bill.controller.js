@@ -46,19 +46,15 @@ const createBill = async (req, res) => {
             let user = null;
             if(body.UserPhnNumber != ''){
                 user = body.UserPhnNumber;
-                console.log("User")
             }
             let supplier = null;
             if(body.supplier !='' && body.supplier != null && body.supplier !=undefined){
                 supplier = body.supplier;
-                console.log("Sup")
             }
             console.log(body)
             let customerType = "new";
             if(body.CustomerType != ''){
                 customerType = body.CustomerType;
-                console.log("below is ct")
-                console.log(body.customerType)
             }
             let offer = null;
             const offerObj = body.currentOffer;
@@ -194,6 +190,138 @@ const createBill = async (req, res) => {
     }
     
 }
+
+// const editBill = async (req, res) => {
+//     try {
+//         const { billID } = req.params; // ID of the transaction to update
+//         const body = req.body;
+//         if (!billID) {
+//             return res.status(400).json(new ApiResponse(400, {}, "Transaction ID is required", false));
+//         }
+
+//         const sequelize = initialSequelize();
+//         const t = await (await sequelize).transaction();
+
+//         try {
+//             // Find the existing transaction
+//             const existingBill = await BillMaster.findByPk(billID, { transaction: t });
+
+//             if (!existingBill) {
+//                 return res.status(404).json(new ApiResponse(404, {}, "Bill not found", false));
+//             }
+
+//             let user = null;
+//             if(body.UserPhnNumber != ''){
+//                 user = body.UserPhnNumber;
+//             }
+//             let supplier = null;
+//             if(body.supplier !='' && body.supplier != null && body.supplier !=undefined){
+//                 supplier = body.supplier;
+//             }
+//             console.log(body)
+//             let customerType = "new";
+//             if(body.CustomerType != ''){
+//                 customerType = body.CustomerType;
+//             }
+//             let offer = null;
+//             const offerObj = body.currentOffer;
+//             if(offerObj.offerID !=''){
+//                 offer = offerObj.offerID
+//             }
+//             let coupon = null;
+//             if(offerObj.couponID !=''){
+//                 coupon = offerObj.couponID
+//             }
+//             existingBill.set({
+//                 phoneNumber: user,
+//                 supplier: supplier,
+//                 customerType: customerType,
+//                 paymentType: body.PaymentType,
+//                 finalAmount: body.totalAmount,
+//                 finalAmountF: body.totalAmountF,
+//                 rewardPointsUsed: body.RedeemPoints
+//             });
+        
+//         await existingBill.save({ transaction: t });
+
+//         const billDetailsOld = await billTransactionDetails.findAll({ 
+//             where: { billID: billID }, 
+//             transaction: t 
+//         })
+
+//         // Remove existing transaction details
+//         await billTransactionDetails.destroy({
+//             where: { billID: billID },
+//             transaction: t
+//         });
+
+//         // Restore inventory before updating
+//         for (const oldDetail of billDetailsOld) {
+//             const inventoryDetail = await InventoryDetails.findOne({
+//                 where: { inventoryID: body.location, productID: oldDetail.productID },
+//                 transaction: t
+//             });
+
+//             if (inventoryDetail) {
+//                 inventoryDetail.quantity += oldDetail.quantity;
+//                 await inventoryDetail.save({ transaction: t });
+//             }
+//         }
+
+//         // Insert updated transaction details
+//         for (const detail of transactionDetail) {
+//             const { productID, quantity, discountAmt, amount, wholeSalePrice, cgstAmount, sgstAmount, igstAmount, netAmount } = detail;
+            
+//             await AccountsTransactionDetails.create({
+//                 accountTransaction: transactionID,
+//                 productID,
+//                 quantity,
+//                 discountAmt,
+//                 amount,
+//                 wholeSalePrice,
+//                 cgstAmount,
+//                 sgstAmount,
+//                 igstAmount,
+//                 netAmount
+//             }, { transaction: t });
+
+//             // Update inventory quantity
+//             let inventoryDetail = await InventoryDetails.findOne({
+//                 where: { inventoryID: inventory, productID },
+//                 transaction: t
+//             });
+
+//             if (inventoryDetail) {
+//                 inventoryDetail.quantity += quantity;
+//                 await inventoryDetail.save({ transaction: t });
+//             } else {
+//                 await InventoryDetails.create({
+//                     inventoryID: inventory,
+//                     productID,
+//                     quantity
+//                 }, { transaction: t });
+//             }
+//         }
+//             await t.commit();
+//             return res.status(200).json(new ApiResponse(200, existingTransaction, "Transaction updated successfully", true));
+//         } catch (error) {
+//             await t.rollback();
+//             console.error("Error in editAccountTransaction:", error);
+//             return res.status(500).json(new ApiResponse(500, {}, "Failed to update transaction", false));
+//         }
+//     } catch (error) {
+//         return res.status(500).json(new ApiResponse(500, {}, "Failed to update transaction", false));
+//     }
+// };
+
+
+
+
+
+
+
+
+
 
 
 export {createBill}
