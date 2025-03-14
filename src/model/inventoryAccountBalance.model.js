@@ -47,7 +47,7 @@ export const InventoryAccountBalance = (await sequelize).define("InventoryAccoun
         defaultValue: Sequelize.NOW,
     }
 }, {
-    tableName: "InventoryAccountBalance",  // Ensure the correct table name
+    tableName: "Inventoryaccountbalance",  // Ensure the correct table name
     timestamps: true,
 });
 

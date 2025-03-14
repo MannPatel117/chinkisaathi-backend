@@ -93,7 +93,7 @@ export const billTransactionDetails = (await sequelize).define(
     },
     },
     {
-      tableName: "billTransactionDetails",
+      tableName: "billtransactiondetails",
       timestamps: true, // Enables createdAt and updatedAt
     }
   );

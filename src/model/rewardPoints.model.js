@@ -41,7 +41,7 @@ export const RewardsPoint = (await sequelize).define(
     },
   },
   {
-    tableName: "rewardsPoint",
+    tableName: "rewardspoint",
     timestamps: false, // No updatedAt required
   }
 );
