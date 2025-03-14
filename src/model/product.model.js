@@ -69,7 +69,7 @@ export const product = (await sequelize).define('MasterProducts',{
         defaultValue: Sequelize.NOW,
     },
     },{
-        tableName: 'masterProduct',
+        tableName: 'masterproduct',
         timestamps: true,   // Enables createdAt and updatedAt
         paranoid: true, 
     });

@@ -92,7 +92,7 @@ export const adminUsers =(await sequelize).define('AdminUsers',{
         defaultValue: Sequelize.NOW,
     },
     },{
-        tableName: 'adminUsers',
+        tableName: 'adminusers',
         timestamps: true,   // Enables createdAt and updatedAt
         paranoid: true, 
     });

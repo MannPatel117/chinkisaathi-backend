@@ -103,7 +103,7 @@ import jwt from "jsonwebtoken"
               userName: userName,
             }
           });
-      
+          console.log(user)
           if (!user) {
             return res
             .status(401)
@@ -136,6 +136,7 @@ import jwt from "jsonwebtoken"
                 }, "Login Successful", true));
       
         } catch (error) {
+          console.log(error)
           return res
           .status(500)
           .json(new ApiResponse(500, "Please contact support", "Server Error", false));;

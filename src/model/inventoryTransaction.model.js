@@ -76,7 +76,7 @@ export const InventoryTransaction = (await sequelize).define('InventoryTransacti
         defaultValue: Sequelize.NOW,
     }
 }, {
-    tableName: 'InventoryTransaction',
+    tableName: 'inventorytransaction',
     timestamps: true,
     paranoid: true,
 });

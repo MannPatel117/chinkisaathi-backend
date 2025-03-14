@@ -97,7 +97,7 @@ export const BillMaster = (await sequelize).define(
     },
     },
     {
-      tableName: "billMaster",
+      tableName: "billmaster",
       timestamps: true, // Enables createdAt and updatedAt
     }
   );

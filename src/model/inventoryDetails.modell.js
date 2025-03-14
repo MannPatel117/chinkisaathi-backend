@@ -53,7 +53,7 @@ export const InventoryDetails = (await sequelize).define('InventoryDetails', {
         defaultValue: Sequelize.NOW,
     }
 }, {
-    tableName: 'inventoryDetails',
+    tableName: 'inventorydetails',
     timestamps: true,
     paranoid: true,
 });
