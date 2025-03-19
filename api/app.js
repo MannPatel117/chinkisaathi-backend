@@ -45,16 +45,16 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 // Setup routes
-app.use('/api/v1/adminUser', adminUser);
-app.use('/api/v1/products', product);
-app.use('/api/v1/accounts', account);
-app.use('/api/v1/accountTransaction', accountTransaction);
-app.use('/api/v1/users', users);
-app.use('/api/v1/inventorys', inventory);
-app.use('/api/v1/inventoryDetails', inventoryDetails);
-app.use('/api/v1/inventoryAccounts', inventoryAccounts);
-app.use('/api/v1/offers', offers);
-app.use('/api/v1/bills', bills);
+app.use('/api/adminUser', adminUser);
+app.use('/api/products', product);
+app.use('/api/accounts', account);
+app.use('/api/accountTransaction', accountTransaction);
+app.use('/api/users', users);
+app.use('/api/inventorys', inventory);
+app.use('/api/inventoryDetails', inventoryDetails);
+app.use('/api/inventoryAccounts', inventoryAccounts);
+app.use('/api/offers', offers);
+app.use('/api/bills', bills);
 
 // Root route
 app.get("/", (req, res) => {
