@@ -300,7 +300,10 @@ const editAccountTransaction = async (req, res) => {
                         await inventoryDetail.save({ transaction: t });
                     }
                 }
-
+                await InventoryTransaction.destroy({
+                    where: { accountTransactionID: transactionID },
+                    transaction: t
+                })
                 // Insert updated transaction details
                 for (const detail of transactionDetail) {
                     const { productID, quantity, discountAmt, amount, wholeSalePrice, cgstAmount, sgstAmount, igstAmount, netAmount } = detail;
@@ -327,6 +330,14 @@ const editAccountTransaction = async (req, res) => {
                     if (inventoryDetail) {
                         inventoryDetail.quantity += quantity;
                         await inventoryDetail.save({ transaction: t });
+                        await InventoryTransaction.create({
+                            inventoryID: inventory,
+                            productID: productID,
+                            accountTransactionID: transactionID,
+                            quantity: quantity,
+                            type: 'add',
+                            reason: 'GOODS RECEIPT :'+ currentGR,
+                        }, { transaction: t })
                     } else {
                         await InventoryDetails.create({
                             inventoryID: inventory,
