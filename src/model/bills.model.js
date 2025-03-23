@@ -50,7 +50,7 @@ export const BillMaster = (await sequelize).define(
         allowNull: false,
       },
       customerType: {
-        type: DataTypes.ENUM('new', 'existing'),
+        type: DataTypes.ENUM('new', 'existing', 'facebook', 'chinki-van'),
         defaultValue: 'new',
       },
       paymentType: {

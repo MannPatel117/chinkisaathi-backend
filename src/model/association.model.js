@@ -36,6 +36,8 @@ InventoryTransaction.belongsTo(BillMaster, { foreignKey: "billID" });
 // 🟢 Bill Master Relations
 BillMaster.belongsTo(Account, { foreignKey: "supplier", as: "Supplier" });
 BillMaster.belongsTo(Inventory, { foreignKey: "inventoryID", as: "Inventory" });
+BillMaster.belongsTo(User, { foreignKey: "phoneNumber", as: "User" });
+BillMaster.belongsTo(Offer, { foreignKey: "offerID", as: "Offer" });
 BillMaster.hasMany(billTransactionDetails, { foreignKey: "billID", as: "billDetails" });
 
 // 🟢 Bill Transaction Details
