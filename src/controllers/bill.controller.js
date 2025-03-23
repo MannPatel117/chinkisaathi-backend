@@ -479,7 +479,7 @@ const editBill = async (req, res) => {
 };
 
 
-export const getBillById = async (req, res) => {
+const getBillById = async (req, res) => {
     try {
       const { billID } = req.params;
   
@@ -519,7 +519,7 @@ export const getBillById = async (req, res) => {
   };
   
   // 🟢 Get All Bills with Pagination & Search by Phone Number
-  export const getAllBills = async (req, res) => {
+  const getAllBills = async (req, res) => {
     try {
       const { page = 1, limit = 10, pagination = "false", search, inventory, toDate, fromDate, dateField = 'createdAt', paymentType, } = req.query;
         const query = {}
@@ -623,6 +623,42 @@ export const getBillById = async (req, res) => {
       res.status(500).json({ success: false, message: "Internal server error" });
     }
   };
+
+  const getTotalSalesForPreviousDay = async (req, res) => {
+    try {
+      const { 
+        inventory,  // ✅ Now supports array 
+    } = req.query;
+      // Get the date for yesterday
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const startOfDay = new Date(yesterday.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(yesterday.setHours(23, 59, 59, 999));
+      const inventoryArr = JSON.parse(inventory);
+      // Query to calculate the total sales of the previous day
+      let totalSales = await BillMaster.sum("finalAmount", {
+        where: {
+          createdAt: {
+            [Op.between]: [startOfDay, endOfDay],
+          },
+          inventoryID:{
+            [Op.in]: inventoryArr
+          }
+        },
+      });
+      if(totalSales == null){
+        totalSales= 0;
+      }
+     
+      return res
+                .status(200)
+                .json(new ApiResponse(200, 
+                  totalSales, "Stats fetched", true));
+    } catch (error) {
+      console.error("Error fetching total sales:", error);
+      throw error;
+    }
+  };
   
 
-export { createBill, editBill };
+export { createBill, editBill, getBillById, getAllBills, getTotalSalesForPreviousDay };
