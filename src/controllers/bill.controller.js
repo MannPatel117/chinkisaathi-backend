@@ -626,51 +626,46 @@ const getBillById = async (req, res) => {
 
   const getTotalSalesForPreviousDay = async (req, res) => {
     try {
-      const { 
-        inventory,  // ✅ Now supports array 
-    } = req.query;
-      // Get the date for yesterday
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const startOfDay = new Date(yesterday.setHours(0, 0, 0, 0));
-      const endOfDay = new Date(yesterday.setHours(23, 59, 59, 999));
+      const {
+        inventory, // ✅ Now supports array
+      } = req.query;
+  
+      // Get yesterday's date in IST
+      const yesterday = moment().tz("Asia/Kolkata").subtract(1, "days");
+  
+      // Set the start and end of the day in IST
+      const startOfDay = yesterday.startOf("day").toDate();
+      const endOfDay = yesterday.endOf("day").toDate();
+  
+      // Parse inventory as an array
       const inventoryArr = JSON.parse(inventory);
+  
       // Query to calculate the total sales of the previous day
       let totalSales = await BillMaster.sum("finalAmount", {
         where: {
           createdAt: {
             [Op.between]: [startOfDay, endOfDay],
           },
-          inventoryID:{
-            [Op.in]: inventoryArr
-          }
+          inventoryID: {
+            [Op.in]: inventoryArr,
+          },
         },
       });
-      const sales = await BillMaster.findAll({
-        where: {
-          createdAt: {
-            [Op.between]: [startOfDay, endOfDay],
-          },
-          inventoryID:{
-            [Op.in]: inventoryArr
-          }
-        },
-      })
-      console.log(sales)
-      console.log(totalSales)
-      if(totalSales == null){
-        totalSales= 0;
+  
+  
+      if (totalSales == null) {
+        totalSales = 0;
       }
-     
+  
       return res
-                .status(200)
-                .json(new ApiResponse(200, 
-                  totalSales, "Stats fetched", true));
+        .status(200)
+        .json(new ApiResponse(200, totalSales, "Stats fetched", true));
     } catch (error) {
       console.error("Error fetching total sales:", error);
-      throw error;
+      return res
+        .status(500)
+        .json(new ApiResponse(500, null, "Error fetching total sales", false));
     }
   };
-  
 
 export { createBill, editBill, getBillById, getAllBills, getTotalSalesForPreviousDay };
