@@ -646,6 +646,18 @@ const getBillById = async (req, res) => {
           }
         },
       });
+      const sales = await BillMaster.findAll({
+        where: {
+          createdAt: {
+            [Op.between]: [startOfDay, endOfDay],
+          },
+          inventoryID:{
+            [Op.in]: inventoryArr
+          }
+        },
+      })
+      console.log(sales)
+      console.log(totalSales)
       if(totalSales == null){
         totalSales= 0;
       }
