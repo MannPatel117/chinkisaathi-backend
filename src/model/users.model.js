@@ -46,7 +46,7 @@ export const User = (await sequelize).define(
       defaultValue: 0,
     },
     customerType:{
-      type: DataTypes.ENUM('new', 'existing', 'facebook', 'chinki-van'),
+      type: DataTypes.ENUM('new', 'existing', 'facebook', 'chinki-van', 'new-facebook'),
       defaultValue: 'new',
     },
     createdAt: {

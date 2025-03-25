@@ -301,17 +301,15 @@ const offerStats = async (req, res) => {
     try {
       const { offerID } = req.params;
   
-      const coupon = await Coupon.findAll({where:{
-        couponID: offerID
-      }});
+      const coupon = await Coupon.findByPk(offerID);
       if (!coupon) {
         return res.status(404).json(new ApiResponse(404, null, "Coupon not found", false));
       }
-      console.log(coupon)
+      console.log(coupon.isRedeemed)
       if(coupon.isRedeemed == true){
         return res.status(200).json(new ApiResponse(200, [], "Already used", true));
       } else {
-        return res.status(200).json(new ApiResponse(200, coupon, "Coupon retrieved successfully", true));
+        return res.status(200).json(new ApiResponse(200, [coupon], "Coupon retrieved successfully", true));
       } 
       
     } catch (error) {
