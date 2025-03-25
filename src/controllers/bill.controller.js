@@ -518,6 +518,7 @@ const getBillById = async (req, res) => {
     }
   };
   
+  
   // 🟢 Get All Bills with Pagination & Search by Phone Number
   const getAllBills = async (req, res) => {
     try {
@@ -593,11 +594,11 @@ const getBillById = async (req, res) => {
                         totalPages: Math.ceil(result.count / parseInt(limit)),
                     },
                     data: result.rows
-                  }, "Account Transaction fetched", true));
+                  }, "Bill History fetched", true));
       } else {
         // Return all records without pagination
         result = await BillMaster.findAll({
-          where: whereCondition,
+          where: query,
           include: [
             {
               model: billTransactionDetails,
@@ -612,11 +613,11 @@ const getBillById = async (req, res) => {
           ],
           order: [["createdAt", "DESC"]],
         });
-  
-        res.status(200).json({
-          success: true,
-          data: result,
-        });
+        return res
+                .status(200)
+                .json(new ApiResponse(200, 
+                  result, "Bill History fetched", true));
+     
       }
     } catch (error) {
       console.error("Error fetching all bills:", error);
