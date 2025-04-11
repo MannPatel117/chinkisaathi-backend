@@ -18,7 +18,7 @@ import jwt from "jsonwebtoken"
             lastName,
             password,
             role,
-            branch,
+            inventory,
             phnnumber,
             emailid,
             addressLine1,
@@ -40,7 +40,7 @@ import jwt from "jsonwebtoken"
           }
 
           // Validate mandatory fields
-          if (!userName || !firstName || !lastName || !password || !branch) {
+          if (!userName || !firstName || !lastName || !password || !inventory) {
             return res
             .status(400)
             .json(new ApiResponse(400, "Some fields are missing", "Invalid Action", false));
@@ -61,7 +61,7 @@ import jwt from "jsonwebtoken"
             lastName,
             password,
             role,
-            branch,
+            inventory,
             phnnumber,
             emailid,
             addressLine1,
