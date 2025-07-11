@@ -97,7 +97,11 @@ export const Inventory = (await sequelize).define(
     phoneNumber:{
       type: DataTypes.STRING,
       allowNull: true,
-    }
+    },
+    gstno: {
+  type: DataTypes.STRING(15), // limits to VARCHAR(15)
+  allowNull: true,            // optional field
+}
   },
   {
     tableName: "inventory",
