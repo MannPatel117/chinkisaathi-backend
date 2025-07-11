@@ -526,7 +526,9 @@ const getBillById = async (req, res) => {
         const query = {}
         const paymentTypeArr = JSON.parse(paymentType);
         const inventoryArr = JSON.parse(inventory);
+        
       // Define search condition if phoneNumber is provided
+      console.log(search)
       if (search) {
         query[Op.or] = [
           { invoiceNumber: { [Op.like]: `%${search}%` } },
@@ -539,10 +541,6 @@ const getBillById = async (req, res) => {
     }
         if (inventoryArr.length > 0) {
             query.inventoryID = { [Op.in]: inventoryArr };
-        }
-
-        if (inventoryArr.length <= 0) {
-            query.inventoryID = { [Op.in]: 0 };
         }
 
         let startDate = fromDate;
@@ -597,6 +595,7 @@ const getBillById = async (req, res) => {
                   }, "Bill History fetched", true));
       } else {
         // Return all records without pagination
+        console.log(query)
         result = await BillMaster.findAll({
           where: query,
           include: [

@@ -26,7 +26,7 @@ export const BillMaster = (await sequelize).define(
         allowNull: false,
       },
       phoneNumber:{
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         references: {
           model: User, // The referenced model
           key: "phoneNumber", // The primary key in the referenced model
