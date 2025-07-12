@@ -84,7 +84,7 @@ const editOffer = async (req, res) => {
       const includeProduct = {
         model: product,
         as: "FreeProduct",
-        attributes: ["productID", "productName", "barcode"], // Only fetch necessary fields
+        attributes: ["productID", "productName", "barcode", "mrp"], // Only fetch necessary fields
         required: false, // Don't filter out offers without a free product
     };
     
